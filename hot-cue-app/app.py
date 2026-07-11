@@ -9,11 +9,29 @@ import streamlit.components.v1 as components
 from supabase import create_client, Client
 
 # ==========================================
+# 🔒 PASSWORD PROTECTION
+# ==========================================
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+
+if not st.session_state["authenticated"]:
+    st.title("🎧 1Source DJ Access")
+    pwd = st.text_input("Enter Password:", type="password")
+    if st.button("Unlock App"):
+        if pwd == st.secrets["APP_PASSWORD"]:
+            st.session_state["authenticated"] = True
+            st.rerun()
+        else:
+            st.error("Incorrect password.")
+    st.stop()  # This entirely hides the rest of the app until unlocked!
+    
+# ==========================================
 # 0. SUPABASE CLOUD CONNECTION
 # ==========================================
 # Ensure you replace these with your actual URL and Anon Key!
-SUPABASE_URL = "https://ficjqoocryfvzpnupipj.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpY2pxb29jcnlmdnpwbnVwaXBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MjE0ODEsImV4cCI6MjA5OTI5NzQ4MX0.gNvKgQXi07USNqSdcE1hfm273lHftwb6zufH3O2HYyU"
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+APP_PASSWORD = st.secrets["APP_PASSWORD"]
 
 @st.cache_resource
 def init_connection():
